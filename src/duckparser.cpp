@@ -5,6 +5,7 @@
  */
 
 #include "duckparser.h"
+#include "duckscript.h"
 
 #include "config.h"
 #include "debug.h"
@@ -41,7 +42,12 @@ namespace duckparser {
     };
 
     void type(const char* str, size_t len) {
-        keyboard.write(str, len);
+        for (size_t i = 0; i < len; i++) {
+            if(!duckscript::isRunning()) break;
+            char single_char[2] = { str[i], '\0' }; // Crear una cadena de un solo carácter con terminador nulo
+            keyboard.write(single_char, 1); // Enviar el carácter individual a la función keyboard.write
+            usleep(defaultDelay*1000); // Esperar el tiempo predeterminado
+        }
     }
 
     void press(const char* str, size_t len) {
