@@ -287,7 +287,8 @@ window.addEventListener("load", function() {
   };
 
   E("editorStop").onclick = function() {
-    stop(get_editor_filename());
+    //stop(get_editor_filename());
+    stopAll();
   }
 
   E("editorRun").onclick = function() {
