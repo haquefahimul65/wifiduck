@@ -93,7 +93,9 @@ namespace webserver {
         });
 
         server.onNotFound([](AsyncWebServerRequest* request) {
-            request->redirect("/error404.html");
+            request->redirect("/index.html");
+            
+            //request->redirect("/error404.html");
         });
 
         server.on("/run", [](AsyncWebServerRequest* request) {
@@ -172,8 +174,8 @@ namespace webserver {
 
         dnsServer.setTTL(300);
         dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
-        dnsServer.start(53, URL, apIP);
-
+        //dnsServer.start(53, URL, apIP);
+        dnsServer.start(53, "*", apIP);
         MDNS.addService("http", "tcp", 80);
 
         // Websocket
