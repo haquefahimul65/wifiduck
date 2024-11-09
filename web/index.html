@@ -40,8 +40,14 @@
                 <h1>Scripts <a class="reload" id="scriptsReload">&#x21bb;</a></h1>
                 <table class="table" id="scriptTable"></table>
                 <div class="row">
-                    <input placeholder="Filename /<name>" type="text" class="smooth" value="/" id="newFile"/>
-                    <button class="success" onclick="create(get_new_filename())">create</button>
+
+                <form method='POST' action='/upload' enctype='multipart/form-data' id="uploadForm">
+                    <input type='file' name='upload' id='fileInput' style="display: none;" onchange="updateFileName()" />
+                    <input placeholder="Filename /<name>" type="text" class="smooth" value="/" id="newFile" onclick="document.getElementById('fileInput').click()" readonly />
+                    <button type="button" class="primary" onclick="submitForm()" id="submitButton">Choose File</button>
+                </form>                   
+                <input placeholder="Filename /<name>" type="text" class="smooth" value="/" id="newFile"/>
+                <button class="success" onclick="create(get_new_filename())">create</button>
                 </div>
             </section>
             <section>
@@ -68,6 +74,7 @@
                     </div>
                 </div>
             </section>
+                        
             <section>
                 <!--<h1>Documentation</h1>-->
                 <h2>Scripting</h2>
@@ -305,5 +312,39 @@
             Copyright (c) 2021 Spacehuhn Technologies<br>
             <a href="https://spacehuhn.com" target="_blank">spacehuhn.com</a>
         </footer>
+        
+        <script>
+        function updateFileName() {
+            const fileInput = document.getElementById('fileInput');
+            const newFile = document.getElementById('newFile');
+            const submitButton = document.getElementById('submitButton');
+
+            // Asigna el nombre del archivo al campo de texto
+            newFile.value = fileInput.files.length > 0 ? fileInput.files[0].name : '/';
+
+            // Cambia el texto del botón a "Submit" para confirmar la subida
+            // Cambia el texto del botón y su clase
+            if (fileInput.files.length > 0) {
+                submitButton.innerText = 'UPLOAD';
+                submitButton.classList.remove('primary');
+                submitButton.classList.add('warn');
+            } else {
+                submitButton.innerText = 'CHOOSE FILE';
+                submitButton.classList.remove('warn');
+                submitButton.classList.add('primary');
+            }
+        }
+
+        function submitForm() {
+            const fileInput = document.getElementById('fileInput');
+            const submitButton = document.getElementById('submitButton');
+            
+            if (fileInput.files.length > 0 && submitButton.innerText != 'CHOOSE FILE') {
+                document.getElementById('uploadForm').submit();
+            } else {
+                fileInput.click();  // Abre el diálogo para seleccionar un archivo
+            }
+        }
+        </script>
     </body>
 </html>

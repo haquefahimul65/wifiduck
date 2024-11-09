@@ -40,6 +40,7 @@ namespace webserver {
 
     bool reboot = false;
     IPAddress apIP(192, 168, 4, 1);
+    File upFile;
 
     void wsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
         if (type == WS_EVT_CONNECT) {
@@ -76,7 +77,26 @@ namespace webserver {
             }
         }
     }
-
+    
+    void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+      if (!index) {
+        String path = request->url();
+        if (path != "/upload") {
+          request->send(500, "text/plain", "Internal Server Error");
+          return;
+        }
+        if (!filename.startsWith("/")) {
+          filename = "/" + filename;
+        }
+        upFile = LittleFS.open(filename, "w");
+      }
+      if (upFile) {
+        upFile.write(data, len);
+      }
+      if (final) {
+        upFile.close();
+      }
+    }
     // ===== PUBLIC ===== //
     void begin() {
         // Access Point
@@ -93,9 +113,15 @@ namespace webserver {
         });
 
         server.onNotFound([](AsyncWebServerRequest* request) {
-            request->redirect("/error404.html");
+            request->redirect("/index.html");
+            
+            //request->redirect("/error404.html");
         });
-
+          //File Upload
+          server.on("/upload", HTTP_POST, [](AsyncWebServerRequest *request) {
+               request->redirect("/index.html");
+            }, handleFileUpload);
+        
         server.on("/run", [](AsyncWebServerRequest* request) {
             String message;
 
@@ -172,8 +198,8 @@ namespace webserver {
 
         dnsServer.setTTL(300);
         dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
-        dnsServer.start(53, URL, apIP);
-
+        //dnsServer.start(53, URL, apIP);
+        dnsServer.start(53, "*", apIP);
         MDNS.addService("http", "tcp", 80);
 
         // Websocket
@@ -190,7 +216,7 @@ namespace webserver {
         if (reboot) ESP.restart();
         dnsServer.processNextRequest();
     }
-
+   
     void send(const char* str) {
         if (currentClient) currentClient->text(str);
     }
