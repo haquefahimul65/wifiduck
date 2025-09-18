@@ -33,17 +33,3 @@
 
 # Save on Command Plugin
 save-commands.json
-
-# Compiled binaries
-*.bin
-*.zip
-.DS_Store
-
-*.hex
-
-*.uf2
-
-.pio
-.idea
-.vscode
-
