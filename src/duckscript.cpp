@@ -6,11 +6,8 @@
 #include "duckscript.h"
 #include "duckparser.h"
 
-
 #include "config.h"
 #include "debug.h"
-
-#include "spiffs.h"
 
 namespace duckscript {
 

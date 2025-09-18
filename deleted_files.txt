@@ -1,0 +1,3 @@
+Deleted the following files:
+- /workspaces/wifiduck/custom_usb_descriptors/USB.cpp
+- /workspaces/wifiduck/src/locale/usb_hid_keys.h

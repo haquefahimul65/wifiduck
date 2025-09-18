@@ -1,0 +1,18 @@
+# Essential Files for USB Rubber Ducky Core
+
+## Retained Files
+- `platformio.ini`
+- `README.md`
+- `src/main.cpp`
+- `src/duckparser.cpp`
+- `src/duckparser.h`
+- `src/duckscript.cpp`
+- `src/duckscript.h`
+- `src/keyboard.cpp`
+- `src/keyboard.h`
+- `web/index.html`
+- `web/script.js`
+- `web/style.css`
+
+## Deleted Files
+- All other files and folders not listed above will be removed.

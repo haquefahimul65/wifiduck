@@ -15,6 +15,7 @@ public:
   virtual void press(const char* str, size_t len) = 0;
   virtual void release() = 0;
   virtual void setLocale(void* locale) = 0;
+  virtual void send(void* report) = 0;
 };
 
 namespace duckparser {

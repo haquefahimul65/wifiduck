@@ -5,13 +5,16 @@
 
 #pragma once
 
-// If you get an error here, you probably have selected the wrong board
-// under Tools > Board
-#include "USBHID.h"
-#include "locales.h"
 #include "Print.h"
-
 #include "esp_event.h"
+#include "duckparser.h"
+#include "BleKeyboardManager.h"
+
+// Define keyboard modes
+enum KeyboardMode {
+    MODE_USB_HID,
+    MODE_BLE
+};
 
 ESP_EVENT_DECLARE_BASE(ARDUINO_USB_HID_KEYBOARD_EVENTS);
 
@@ -35,37 +38,47 @@ typedef union {
 
 
 
-class IKeyboard {
-public:
-    virtual void begin() = 0;
-    virtual void type(const char* str, size_t len) = 0;
-    virtual void press(const char* str, size_t len) = 0;
-    virtual void release() = 0;
-    virtual void setLocale(void* locale) = 0;
-};
-
-class HIDKeyboard : public USBHIDDevice, public IKeyboard {
+class HIDKeyboard : public IKeyboard {
 private:
-  USBHID hid;
-class BleKeyboardAdapter : public IKeyboard {
-public:
-  BleKeyboardAdapter(BleKeyboardManager* bleMgr) : bleManager(bleMgr) {}
-  void begin() override { bleManager->begin(); }
-  void type(const char* str, size_t len) override { bleManager->type(str); }
-  void press(const char* str, size_t len) override {
-    // Only basic key support for BLE
-    if (len == 1) bleManager->pressKey(str[0]);
-    else bleManager->type(str);
-  }
-  void release() override { bleManager->releaseAll(); }
-  void setLocale(void* locale) override {}
-private:
-  BleKeyboardManager* bleManager;
-};
   static hid_locale_t* locale;
-  
 
 public:
+    void begin() override {
+        hid.begin();
+    }
+
+    void type(const char* str, size_t len) override {
+        if (str && len > 0) {
+            for (size_t i = 0; i < len; i++) {
+                press(&str[i], 1);
+                release();
+            }
+        }
+    }
+
+    void press(const char* str, size_t len) override {
+        if (str && len > 0 && locale) {
+            uint8_t report[8] = { 0 };
+            report[0] = locale->modifiers[str[0]];
+            report[2] = locale->keys[str[0]];
+            send(report);
+        }
+    }
+
+    void release() override {
+        uint8_t report[8] = { 0 };
+        send(report);
+    }
+
+    void setLocale(void* l) override {
+        locale = (hid_locale_t*)l;
+    }
+
+    void send(void* report) override {
+        if (report) {
+            hid.write(report, sizeof(uint8_t) * 8);
+        }
+    }
 
   typedef struct
   {

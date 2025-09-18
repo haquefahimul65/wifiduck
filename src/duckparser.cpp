@@ -201,8 +201,8 @@ namespace duckparser {
                         }
                     }
 
-                    keyboard.send(&k);
-                    keyboard.release();
+                    keyboard->send(&k);
+                    keyboard->release();
                 }
             }
 

@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "locale/usb_hid_keys.h"
 #include "locale/locale_types.h"
 
 #include "locale/locale_us.h"
