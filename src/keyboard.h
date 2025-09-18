@@ -35,9 +35,33 @@ typedef union {
 
 
 
-class HIDKeyboard : public USBHIDDevice {
+class IKeyboard {
+public:
+    virtual void begin() = 0;
+    virtual void type(const char* str, size_t len) = 0;
+    virtual void press(const char* str, size_t len) = 0;
+    virtual void release() = 0;
+    virtual void setLocale(void* locale) = 0;
+};
+
+class HIDKeyboard : public USBHIDDevice, public IKeyboard {
 private:
   USBHID hid;
+class BleKeyboardAdapter : public IKeyboard {
+public:
+  BleKeyboardAdapter(BleKeyboardManager* bleMgr) : bleManager(bleMgr) {}
+  void begin() override { bleManager->begin(); }
+  void type(const char* str, size_t len) override { bleManager->type(str); }
+  void press(const char* str, size_t len) override {
+    // Only basic key support for BLE
+    if (len == 1) bleManager->pressKey(str[0]);
+    else bleManager->type(str);
+  }
+  void release() override { bleManager->releaseAll(); }
+  void setLocale(void* locale) override {}
+private:
+  BleKeyboardManager* bleManager;
+};
   static hid_locale_t* locale;
   
 

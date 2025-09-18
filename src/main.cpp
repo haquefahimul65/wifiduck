@@ -10,11 +10,24 @@
 #include "cli.h"
 #include "USB.h"
 
+#include <BleKeyboard.h>
+#include "BleKeyboardManager.h"
+
 
 void setup() {
     debug_init();
-    duckparser::beginKeyboard();
-    USB.begin();
+    bool useBLE = settings::get("keyboard_mode") == "ble";
+    if (useBLE) {
+        static BleKeyboardManager bleManager;
+        static BleKeyboardAdapter bleAdapter(&bleManager);
+        duckparser::setKeyboard(&bleAdapter);
+        duckparser::beginKeyboard();
+    } else {
+        static HIDKeyboard hidKeyboard;
+        duckparser::setKeyboard(&hidKeyboard);
+        duckparser::beginKeyboard();
+        USB.begin();
+    }
     delay(200);
     spiffs::begin();
     settings::begin();

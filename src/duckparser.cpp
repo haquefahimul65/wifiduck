@@ -33,89 +33,26 @@ namespace duckparser {
     unsigned long sleepStartTime = 0;
     unsigned long sleepTime      = 0;
 
-    HIDKeyboard keyboard;
+    IKeyboard* keyboard = nullptr;
 
+    void setKeyboard(IKeyboard* kbd) {
+        keyboard = kbd;
+    }
 
     void beginKeyboard() {
-      keyboard.begin();
-    };
+        if (keyboard) keyboard->begin();
+    }
 
     void type(const char* str, size_t len) {
-        keyboard.write(str, len);
+        if (keyboard) keyboard->type(str, len);
     }
 
     void press(const char* str, size_t len) {
-        // character
-
-        //
-        ESP_LOGI("","%s", str);
-
-        if (len == 1) keyboard.press(str);
-
-        // Keys
-        else if (compare1(str, len, "ENTER", CASE_SENSETIVE)) keyboard.pressKey(KEY_ENTER);
-        else if (compare1(str, len, "MENU", CASE_SENSETIVE) || compare1(str, len, "APP", CASE_SENSETIVE)) keyboard.pressKey(KEY_PROPS);
-        else if (compare1(str, len, "DELETE", CASE_SENSETIVE)) keyboard.pressKey(KEY_DELETE);
-        else if (compare1(str, len, "BACKSPACE", CASE_SENSETIVE)) keyboard.pressKey(KEY_BACKSPACE);
-        else if (compare1(str, len, "HOME", CASE_SENSETIVE)) keyboard.pressKey(KEY_HOME);
-        else if (compare1(str, len, "INSERT", CASE_SENSETIVE)) keyboard.pressKey(KEY_INSERT);
-        else if (compare1(str, len, "PAGEUP", CASE_SENSETIVE)) keyboard.pressKey(KEY_PAGEUP);
-        else if (compare1(str, len, "PAGEDOWN", CASE_SENSETIVE)) keyboard.pressKey(KEY_PAGEDOWN);
-        else if (compare1(str, len, "UPARROW", CASE_SENSETIVE) || compare1(str, len, "UP", CASE_SENSETIVE)) keyboard.pressKey(KEY_UP);
-        else if (compare1(str, len, "DOWNARROW", CASE_SENSETIVE) || compare1(str, len, "DOWN", CASE_SENSETIVE)) keyboard.pressKey(KEY_DOWN);
-        else if (compare1(str, len, "LEFTARROW", CASE_SENSETIVE) || compare1(str, len, "LEFT", CASE_SENSETIVE)) keyboard.pressKey(KEY_LEFT);
-        else if (compare1(str, len, "RIGHTARROW", CASE_SENSETIVE) || compare1(str, len, "RIGHT", CASE_SENSETIVE)) keyboard.pressKey(KEY_RIGHT);
-        else if (compare1(str, len, "TAB", CASE_SENSETIVE)) keyboard.pressKey(KEY_TAB);
-        else if (compare1(str, len, "END", CASE_SENSETIVE)) keyboard.pressKey(KEY_END);
-        else if (compare1(str, len, "ESC", CASE_SENSETIVE) || compare1(str, len, "ESCAPE", CASE_SENSETIVE)) keyboard.pressKey(KEY_ESC);
-        else if (compare1(str, len, "F1", CASE_SENSETIVE)) keyboard.pressKey(KEY_F1);
-        else if (compare1(str, len, "F2", CASE_SENSETIVE)) keyboard.pressKey(KEY_F2);
-        else if (compare1(str, len, "F3", CASE_SENSETIVE)) keyboard.pressKey(KEY_F3);
-        else if (compare1(str, len, "F4", CASE_SENSETIVE)) keyboard.pressKey(KEY_F4);
-        else if (compare1(str, len, "F5", CASE_SENSETIVE)) keyboard.pressKey(KEY_F5);
-        else if (compare1(str, len, "F6", CASE_SENSETIVE)) keyboard.pressKey(KEY_F6);
-        else if (compare1(str, len, "F7", CASE_SENSETIVE)) keyboard.pressKey(KEY_F7);
-        else if (compare1(str, len, "F8", CASE_SENSETIVE)) keyboard.pressKey(KEY_F8);
-        else if (compare1(str, len, "F9", CASE_SENSETIVE)) keyboard.pressKey(KEY_F9);
-        else if (compare1(str, len, "F10", CASE_SENSETIVE)) keyboard.pressKey(KEY_F10);
-        else if (compare1(str, len, "F11", CASE_SENSETIVE)) keyboard.pressKey(KEY_F11);
-        else if (compare1(str, len, "F12", CASE_SENSETIVE)) keyboard.pressKey(KEY_F12);
-        else if (compare1(str, len, "SPACE", CASE_SENSETIVE)) keyboard.pressKey(KEY_SPACE);
-        else if (compare1(str, len, "PAUSE", CASE_SENSETIVE) || compare1(str, len, "BREAK", CASE_SENSETIVE)) keyboard.pressKey(KEY_PAUSE);
-        else if (compare1(str, len, "CAPSLOCK", CASE_SENSETIVE)) keyboard.pressKey(KEY_CAPSLOCK);
-        else if (compare1(str, len, "NUMLOCK", CASE_SENSETIVE)) keyboard.pressKey(KEY_NUMLOCK);
-        else if (compare1(str, len, "PRINTSCREEN", CASE_SENSETIVE)) keyboard.pressKey(KEY_SYSRQ);
-        else if (compare1(str, len, "SCROLLLOCK", CASE_SENSETIVE)) keyboard.pressKey(KEY_SCROLLLOCK);
-
-        // NUMPAD KEYS
-        else if (compare1(str, len, "NUM_0", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP0);
-        else if (compare1(str, len, "NUM_1", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP1);
-        else if (compare1(str, len, "NUM_2", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP2);
-        else if (compare1(str, len, "NUM_3", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP3);
-        else if (compare1(str, len, "NUM_4", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP4);
-        else if (compare1(str, len, "NUM_5", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP5);
-        else if (compare1(str, len, "NUM_6", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP6);
-        else if (compare1(str, len, "NUM_7", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP7);
-        else if (compare1(str, len, "NUM_8", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP8);
-        else if (compare1(str, len, "NUM_9", CASE_SENSETIVE)) keyboard.pressKey(KEY_KP9);
-        else if (compare1(str, len, "NUM_ASTERIX", CASE_SENSETIVE)) keyboard.pressKey(KEY_KPASTERISK);
-        else if (compare1(str, len, "NUM_ENTER", CASE_SENSETIVE)) keyboard.pressKey(KEY_KPENTER);
-        else if (compare1(str, len, "NUM_MINUS", CASE_SENSETIVE)) keyboard.pressKey(KEY_KPMINUS);
-        else if (compare1(str, len, "NUM_DOT", CASE_SENSETIVE)) keyboard.pressKey(KEY_KPDOT);
-        else if (compare1(str, len, "NUM_PLUS", CASE_SENSETIVE)) keyboard.pressKey(KEY_KPPLUS);
-
-        // Modifiers
-        else if (compare1(str, len, "CTRL", CASE_SENSETIVE) || compare1(str, len, "CONTROL", CASE_SENSETIVE)) keyboard.pressModifier(KEY_MOD_LCTRL);
-        else if (compare1(str, len, "SHIFT", CASE_SENSETIVE)) keyboard.pressModifier(KEY_MOD_LSHIFT);
-        else if (compare1(str, len, "ALT", CASE_SENSETIVE)) keyboard.pressModifier(KEY_MOD_LALT);
-        else if (compare1(str, len, "WINDOWS", CASE_SENSETIVE) || compare1(str, len, "GUI", CASE_SENSETIVE)) keyboard.pressModifier(KEY_MOD_LMETA);
-
-        // Utf8 character
-        else keyboard.press(str);
+        if (keyboard) keyboard->press(str, len);
     }
 
     void release() {
-        keyboard.release();
+        if (keyboard) keyboard->release();
     }
 
     unsigned int toInt(const char* str, size_t len) {
@@ -191,47 +128,10 @@ namespace duckparser {
             }
 
             // LOCALE (-> change keyboard layout)
-            else if (compare1(cmd->str, cmd->len, "LOCALE", CASE_SENSETIVE)) {
+            if (compare1(cmd->str, cmd->len, "LOCALE", CASE_SENSETIVE)) {
+                // Only supported for USB HID
                 word_node* w = cmd->next;
-
-                if (compare1(w->str, w->len, "US", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_us);
-                } else if (compare1(w->str, w->len, "DE", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_de);
-                } else if (compare1(w->str, w->len, "RU", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_ru);
-                } else if (compare1(w->str, w->len, "GB", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_gb);
-                } else if (compare1(w->str, w->len, "ES", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_es);
-                } else if (compare1(w->str, w->len, "FR", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_fr);
-                } else if (compare1(w->str, w->len, "DK", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_dk);
-                } else if (compare1(w->str, w->len, "BE", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_be);
-                } else if (compare1(w->str, w->len, "PT", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_pt);
-                } else if (compare1(w->str, w->len, "IT", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_it);
-                } else if (compare1(w->str, w->len, "SK", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_sk);
-                } else if (compare1(w->str, w->len, "CZ", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_cz);
-                } else if (compare1(w->str, w->len, "SI", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_si);
-                } else if (compare1(w->str, w->len, "BG", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_bg);
-                } else if (compare1(w->str, w->len, "CA-FR", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_cafr);
-                } else if (compare1(w->str, w->len, "CH-DE", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_chde);
-                } else if (compare1(w->str, w->len, "CH-FR", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_chfr);
-                } else if (compare1(w->str, w->len, "HU", CASE_INSENSETIVE)) {
-                    keyboard.setLocale(&locale_hu);
-                }
-                
+                if (keyboard) keyboard->setLocale(nullptr); // BLE: no-op
                 ignore_delay = true;
             }
 
