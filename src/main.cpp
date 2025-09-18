@@ -1,17 +1,12 @@
 #include <Arduino.h>
-#include "duckscript.h"
-#include "duckparser.h"
-#include "keyboard.h"
 #include <BleKeyboard.h>
 
 
 void setup() {
-    static BleKeyboardManager bleManager;
-    static BleKeyboardAdapter bleAdapter(&bleManager);
-    duckparser::setKeyboard(&bleAdapter);
-    duckparser::beginKeyboard();
+    static BleKeyboard bleKeyboard;
+    bleKeyboard.begin();
 }
 
 void loop() {
-    // Core functionality loop
+    // Placeholder for BLE command handling
 }
